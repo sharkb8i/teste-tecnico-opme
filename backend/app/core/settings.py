@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR.parent.parent / '.env')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1'] if DEBUG else ['backend', 'db', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'db', '0.0.0.0']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1'] if DEBUG else ['backend', 'db', '0.0.0.0']
 
 SECRET_KEY = os.getenv("SECRET_KEY", "chave-secreta-temporaria-para-desenvolvimento")
 
@@ -70,6 +71,8 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = ALLOWED_HOSTS
 
 REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': (
