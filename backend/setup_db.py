@@ -1,17 +1,25 @@
-import psycopg
-from psycopg import sql
 import os
 import subprocess
+import psycopg
+from psycopg import sql
+from pathlib import Path
+
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DB_HOST = 'localhost' if DEBUG else 'db'
+
+print(f"DB_HOST: {DB_HOST}")
 
 DB_NAME = os.getenv('DATABASE_NAME', 'todolist')
 DB_USER = os.getenv('DATABASE_USER', 'postgres')
 DB_PASS = os.getenv('DATABASE_PASSWORD', 'postgres')
-DB_HOST = os.getenv('DATABASE_HOST', 'localhost')
 DB_PORT = os.getenv('DATABASE_PORT', '5432')
+
+BASE_DIR = Path(__file__).resolve().parent
+MANAGE_PATH = BASE_DIR / 'app' / 'manage.py'
 
 def create_database_if_not_exists():
   conn = psycopg.connect(
-    dbname=DB_NAME,
+    dbname='postgres',  
     user=DB_USER,
     password=DB_PASS,
     host=DB_HOST,
@@ -35,6 +43,6 @@ def create_database_if_not_exists():
 if __name__ == "__main__":
   create_database_if_not_exists()
   print("Rodando makemigrations...")
-  subprocess.run(['python', 'app/manage.py', 'makemigrations', 'tasks'], check=True)
+  subprocess.run(['python', str(MANAGE_PATH), 'makemigrations', 'tasks'], check=True)
   print("Rodando migrations Django...")
-  subprocess.run(['python', 'app/manage.py', 'migrate'])
+  subprocess.run(['python', str(MANAGE_PATH), 'migrate'])
