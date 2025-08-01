@@ -12,27 +12,28 @@ interface Task {
 
 interface ApiResponse {
   count: number;
-  next: string | null;
-  previous: string | null;
   results: Task[];
 }
 
 export default function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
-  const [prevPageUrl, setPrevPageUrl] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filterDone, setFilterDone] = useState<string>("");
+
   const navigate = useNavigate();
   const { logout } = useAuth();
+  
+  const pageSize = 10;
 
-  const fetchTasks = (url?: string, doneStatus: string = filterDone) => {
-    const requestUrl = url || `tasks/?${doneStatus ? `is_done=${doneStatus}` : ""}`;
+  const fetchTasks = (page: number = 1, doneStatus: string = filterDone) => {
+    let requestUrl = `tasks/?page=${page}`;
+    if (doneStatus) requestUrl += `&is_done=${doneStatus}`;
+
     api.get<ApiResponse>(requestUrl).then((res) => {
       setTasks(res.data.results);
       setCount(res.data.count);
-      setNextPageUrl(res.data.next);
-      setPrevPageUrl(res.data.previous);
+      setCurrentPage(page);
       setFilterDone(doneStatus);
     });
   };
@@ -43,15 +44,17 @@ export default function TaskList() {
 
   const toggleDone = async (task: Task) => {
     await api.put(`tasks/${task.id}/`, { ...task, is_done: !task.is_done });
-    fetchTasks();
+    fetchTasks(currentPage, filterDone);
   };
+
+  const totalPages = Math.ceil(count / pageSize);
 
   return (
     <div>
       <div>
-        <button onClick={() => fetchTasks(undefined, "")}>Todas</button>
-        <button onClick={() => fetchTasks(undefined, "false")}>Pendentes</button>
-        <button onClick={() => fetchTasks(undefined, "true")}>Concluídas</button>
+        <button onClick={() => fetchTasks(1, "")}>Todas</button>
+        <button onClick={() => fetchTasks(1, "false")}>Pendentes</button>
+        <button onClick={() => fetchTasks(1, "true")}>Concluídas</button>
         <button onClick={() => { logout(); navigate("/login"); }}>Sair</button>
       </div>
 
@@ -61,8 +64,12 @@ export default function TaskList() {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
+            <input
+              type="checkbox"
+              checked={task.is_done}
+              onChange={() => toggleDone(task)}
+            />
             <span
-              onClick={() => toggleDone(task)}
               style={{ textDecoration: task.is_done ? "line-through" : "none", cursor: "pointer" }}
             >
               {task.title}
@@ -73,10 +80,11 @@ export default function TaskList() {
       </ul>
 
       <div>
-        <button disabled={!prevPageUrl} onClick={() => prevPageUrl && fetchTasks(prevPageUrl)}>
+        <button disabled={currentPage === 1} onClick={() => fetchTasks(currentPage - 1, filterDone)}>
           Anterior
         </button>
-        <button disabled={!nextPageUrl} onClick={() => nextPageUrl && fetchTasks(nextPageUrl)}>
+        <span> Página {currentPage} de {totalPages || 1} </span>
+        <button disabled={currentPage === totalPages} onClick={() => fetchTasks(currentPage + 1, filterDone)}>
           Próxima
         </button>
         <span> Total de tarefas: {count} </span>
