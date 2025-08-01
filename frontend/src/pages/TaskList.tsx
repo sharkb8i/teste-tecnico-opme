@@ -10,14 +10,31 @@ interface Task {
   is_done: boolean;
 }
 
+interface ApiResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Task[];
+}
+
 export default function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
+  const [prevPageUrl, setPrevPageUrl] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
+  const [filterDone, setFilterDone] = useState<string>("");
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const fetchTasks = (doneStatus: string = "") => {
-    const url = doneStatus ? `tasks/?is_done=${doneStatus}` : "tasks/";
-    api.get(url).then((res) => setTasks(res.data.results || res.data));
+  const fetchTasks = (url?: string, doneStatus: string = filterDone) => {
+    const requestUrl = url || `tasks/?${doneStatus ? `is_done=${doneStatus}` : ""}`;
+    api.get<ApiResponse>(requestUrl).then((res) => {
+      setTasks(res.data.results);
+      setCount(res.data.count);
+      setNextPageUrl(res.data.next);
+      setPrevPageUrl(res.data.previous);
+      setFilterDone(doneStatus);
+    });
   };
 
   useEffect(() => {
@@ -32,14 +49,15 @@ export default function TaskList() {
   return (
     <div>
       <div>
-        <button onClick={() => fetchTasks()}>Todas</button>
-        <button onClick={() => fetchTasks("false")}>Pendentes</button>
-        <button onClick={() => fetchTasks("true")}>Concluídas</button>
+        <button onClick={() => fetchTasks(undefined, "")}>Todas</button>
+        <button onClick={() => fetchTasks(undefined, "false")}>Pendentes</button>
+        <button onClick={() => fetchTasks(undefined, "true")}>Concluídas</button>
         <button onClick={() => { logout(); navigate("/login"); }}>Sair</button>
       </div>
 
       <h2>Minhas Tarefas</h2>
       <button onClick={() => navigate("/tasks/new")}>Nova Tarefa</button>
+
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
@@ -53,6 +71,16 @@ export default function TaskList() {
           </li>
         ))}
       </ul>
+
+      <div>
+        <button disabled={!prevPageUrl} onClick={() => prevPageUrl && fetchTasks(prevPageUrl)}>
+          Anterior
+        </button>
+        <button disabled={!nextPageUrl} onClick={() => nextPageUrl && fetchTasks(nextPageUrl)}>
+          Próxima
+        </button>
+        <span> Total de tarefas: {count} </span>
+      </div>
     </div>
   );
 }

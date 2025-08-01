@@ -15,7 +15,7 @@ export default function Register() {
     setError("");
 
     if (password !== passwordConfirm) {
-      setError("Senhas não coincidem");
+      setError("Senhas não coincidem.");
       return;
     }
 
@@ -24,7 +24,7 @@ export default function Register() {
       navigate("/login");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.response?.data?.username || "Erro ao cadastrar");
+      setError(err.response?.data?.username || "Erro ao cadastrar.");
     }
   };
 
@@ -52,6 +52,11 @@ export default function Register() {
         required
       />
       {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <button type="button" onClick={() => navigate("/login")}>
+        Voltar
+      </button>
+      
       <button type="submit">Cadastrar</button>
     </form>
   );
