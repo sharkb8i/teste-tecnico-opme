@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../services/api";
+import ErrorBox from "../components/ErrorBox";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -29,35 +30,62 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <h2>Cadastro</h2>
-      <input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Usuário"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Senha"
-        required
-      />
-      <input
-        type="password"
-        value={passwordConfirm}
-        onChange={(e) => setPasswordConfirm(e.target.value)}
-        placeholder="Confirme a senha"
-        required
-      />
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <form
+        onSubmit={handleRegister}
+        className="w-full max-w-md p-6 rounded shadow-md bg-white dark:bg-gray-800 transition-colors duration-300"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+          Cadastro
+        </h2>
 
-      <button type="button" onClick={() => navigate("/login")}>
-        Voltar
-      </button>
-      
-      <button type="submit">Cadastrar</button>
-    </form>
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Usuário"
+          required
+          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600
+            dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        />
+
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Senha"
+          required
+          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600
+            dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        />
+
+        <input
+          type="password"
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+          placeholder="Confirme a senha"
+          required
+          className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600
+            dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        />
+
+        {error && <ErrorBox message={error} />}
+
+        <div className="flex justify-between gap-4 mt-2">
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            className="w-1/2 py-2 border border-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
+            Voltar
+          </button>
+          <button
+            type="submit"
+            className="w-1/2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          >
+            Cadastrar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
