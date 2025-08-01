@@ -1,0 +1,8 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+djoser
+django-filter
+psycopg[binary]
+python-dotenv
+setuptools
