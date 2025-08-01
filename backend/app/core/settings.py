@@ -5,13 +5,10 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR.parent.parent / '.env')
 
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = ALLOWED_HOSTS.split(',') if ALLOWED_HOSTS else []
-SECRET_KEY = os.getenv("SECRET_KEY", "chave-secreta-temporaria-para-desenvolvimento")
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = ['localhost', '127.0.0.1'] if DEBUG else ['backend', 'db', '0.0.0.0']
 
-print(f"DEBUG = {DEBUG}, ALLOWED_HOSTS = {ALLOWED_HOSTS}")
-print(f"HOST = {os.getenv('DATABASE_HOST', 'localhost' if DEBUG else 'db')}")
+SECRET_KEY = os.getenv("SECRET_KEY", "chave-secreta-temporaria-para-desenvolvimento")
 
 ROOT_URLCONF = "core.urls"
 STATIC_URL = '/static/'
@@ -66,7 +63,7 @@ DATABASES = {
     'NAME': os.getenv('DATABASE_NAME', 'todolist'),
     'USER': os.getenv('DATABASE_USER', 'postgres'),
     'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
-    'HOST': os.getenv('DATABASE_HOST', 'localhost' if DEBUG else 'db'),
+    'HOST': 'localhost' if DEBUG else 'db',
     'PORT': os.getenv('DATABASE_PORT', '5432'),
   }
 }
