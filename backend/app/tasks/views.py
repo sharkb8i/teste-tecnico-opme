@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions
+from django.db.models import Q
 from .models import Task, Category
 from .serializers import TaskSerializer, CategorySerializer
 
@@ -17,10 +18,16 @@ class TaskViewSet(viewsets.ModelViewSet):
   permission_classes = [permissions.IsAuthenticated]
 
   def get_queryset(self):
-    queryset = Task.objects.filter(user=self.request.user).order_by("-created_at")
+    user = self.request.user
+
+    queryset = Task.objects.filter(
+      Q(user=user) | Q(shared_with=user)
+    ).distinct().order_by("-created_at")
+
     is_done = self.request.query_params.get("is_done")
     if is_done is not None:
       queryset = queryset.filter(is_done=(is_done.lower() == "true"))
+
     return queryset
 
   def perform_create(self, serializer):

@@ -17,7 +17,8 @@ export default function TaskForm() {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [category_id, setCategoryId] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [ownerId, setOwnerId] = useState<number>();
   const [error, setError] = useState("");
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,13 +27,25 @@ export default function TaskForm() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryColor, setNewCategoryColor] = useState("#cccccc");
 
+  const [users, setUsers] = useState<{ id: number; username: string }[]>([]);
+  const [sharedWith, setSharedWith] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !sharedWith.includes(u.id) &&
+      u.id !== ownerId
+  );
+
   useEffect(() => {
     if (id) {
       api.get(`tasks/${id}/`).then((res) => {
-        console.log(res);
         setTitle(res.data.title);
         setDescription(res.data.description);
-        setCategoryId(res.data.category.id ? res.data.category.id.toString() : "");
+        setCategoryId(res.data.category ? res.data.category.id.toString() : "");
+        setSharedWith(res.data.shared_with_ids || []);
+        setOwnerId(res.data.user);
       });
     }
   }, [id]);
@@ -41,6 +54,10 @@ export default function TaskForm() {
     api.get("tasks/categories/").then((res) => {
       setCategories(res.data.results || []);
     });
+  }, []);
+
+  useEffect(() => {
+    api.get("users/").then((res) => setUsers(res.data.results));
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,9 +92,10 @@ export default function TaskForm() {
     const data = {
       title,
       description,
-      category_id: category_id || null,
+      categoryId: categoryId || null,
+      shared_with_ids: sharedWith,
     };
-
+    
     if (id)
       await api.put(`tasks/${id}/`, data);
     else
@@ -116,7 +134,7 @@ export default function TaskForm() {
             <div className="flex items-center space-between">
               <CategoryDropdown
                 categories={categories}
-                selectedId={category_id}
+                selectedId={categoryId}
                 onSelect={handleChangeCategory}
               />
 
@@ -195,6 +213,67 @@ export default function TaskForm() {
                     <ErrorBox message={error} />
                   </div>
                 }
+              </div>
+            )}
+          </div>
+          
+          <div className="flex flex-col border border-gray-300 rounded p-3 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
+            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Compartilhar com
+            </label>
+
+            {/* Campo de busca */}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar usuário..."
+              className="mb-2 p-2 border border-gray-300 rounded dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+            />
+
+            {/* Sugestões */}
+            {searchTerm && filteredUsers.length > 0 && (
+              <ul className="mb-2 border border-gray-300 rounded max-h-32 overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600">
+                {filteredUsers.map((user) => (
+                  <li
+                    key={user.id}
+                    onClick={() => {
+                      setSharedWith([...sharedWith, user.id]);
+                      setSearchTerm("");
+                    }}
+                    className="p-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 text-sm text-gray-800 dark:text-white"
+                  >
+                    {user.username}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Usuários selecionados */}
+            {sharedWith.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {sharedWith.map((id) => {
+                  const user = users.find((u) => u.id === id);
+                  return (
+                    user && (
+                      <span
+                        key={id}
+                        className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded-full text-sm"
+                      >
+                        {user.username}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSharedWith(sharedWith.filter((uid) => uid !== id))
+                          }
+                          className="hover:text-gray-200 text-xs font-bold"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    )
+                  );
+                })}
               </div>
             )}
           </div>

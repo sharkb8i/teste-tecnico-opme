@@ -17,6 +17,7 @@ class Task(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
 
   category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
+  shared_with = models.ManyToManyField(User, blank=True, related_name='shared_tasks')
 
   def __str__(self):
     return self.title
