@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Toast from "../components/Toast";
+
 import api from "../services/api";
 import { useAuth } from "../auth/useAuth";
 
@@ -29,6 +31,7 @@ export default function TaskList() {
   const [count, setCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterDone, setFilterDone] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const navigate = useNavigate();
   const { logout, getCurrentUserId } = useAuth();
@@ -46,6 +49,10 @@ export default function TaskList() {
       setCurrentPage(page);
       setFilterDone(doneStatus);
     });
+  };
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
   };
 
   useEffect(() => {
@@ -110,7 +117,13 @@ export default function TaskList() {
           <li
             key={task.id}
             className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 shadow rounded cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
-            onClick={() => toggleDone(task)}
+            onClick={() => {
+              if (task.user.id !== currentUserId) {
+                showToast("Você não pode marcar tarefas de outras pessoas.");
+                return;
+              }
+              toggleDone(task);
+            }}
           >
             <div className="flex flex-col">
               <div className="flex items-center gap-2 h">
@@ -210,6 +223,14 @@ export default function TaskList() {
           Total de tarefas: {count}
         </span>
       </div>
+
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          type="error"
+          onClose={() => setToastMessage("")}
+        />
+      )}
     </div>
   );
 }
