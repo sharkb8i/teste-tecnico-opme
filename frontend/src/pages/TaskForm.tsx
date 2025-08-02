@@ -21,6 +21,7 @@ export default function TaskForm() {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [taskCategory, setTaskCategory] = useState<Category | null>(null);
   const [categoryId, setCategoryId] = useState<string>("");
   const [owner, setOwner] = useState<{ id: number; username: string }>();
   const [error, setError] = useState("");
@@ -48,6 +49,7 @@ export default function TaskForm() {
         setTitle(res.data.title);
         setDescription(res.data.description);
         setCategoryId(res.data.category ? res.data.category.id.toString() : "");
+        setTaskCategory(res.data.category);
         setSharedWith(res.data.shared_with_ids || []);
         setOwner(res.data.user);
       });
@@ -144,18 +146,18 @@ export default function TaskForm() {
                 />
               )}
 
-              {owner?.id !== currentUserId && (
-                categories.map((cat) => (
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <span key={cat.id} className="flex items-center text-xs font-medium px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded-full">
-                      <span
-                        className="inline-block w-3 h-3 mr-2 rounded-full"
-                        style={{ backgroundColor: cat.color }}
-                      ></span>
-                      {cat.name}
-                    </span>
-                  </div>
-                ))
+              {owner?.id !== currentUserId && taskCategory && (
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <span
+                    className="flex items-center text-xs font-medium px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-800"
+                  >
+                    <span
+                      className="inline-block w-3 h-3 mr-2 rounded-full"
+                      style={{ backgroundColor: taskCategory.color }}
+                    ></span>
+                    {taskCategory.name}
+                  </span>
+                </div>
               )}
 
               {!showNewCategory && owner?.id === currentUserId && (
