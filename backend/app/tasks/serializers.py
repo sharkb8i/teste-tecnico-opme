@@ -13,7 +13,8 @@ class TaskSerializer(serializers.ModelSerializer):
     queryset=Category.objects.all(),
     source='category',
     write_only=True,
-    required=False
+    required=False,
+    allow_null=True
   )
 
   class Meta:
