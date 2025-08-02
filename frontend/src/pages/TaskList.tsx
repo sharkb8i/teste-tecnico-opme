@@ -7,6 +7,10 @@ interface Task {
   id: number;
   title: string;
   is_done: boolean;
+  user: {
+    id: number;
+    username: string;
+  };
   category_id?: number;
   category?: {
     id: number;
@@ -27,7 +31,8 @@ export default function TaskList() {
   const [filterDone, setFilterDone] = useState<string>("");
 
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, getCurrentUserId } = useAuth();
+  const currentUserId = getCurrentUserId();
 
   const pageSize = 10;
 
@@ -102,71 +107,83 @@ export default function TaskList() {
 
       <ul className="space-y-2 mb-6">
         {tasks.map((task) => (
-  <li
-    key={task.id}
-    className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 shadow rounded cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
-    onClick={() => toggleDone(task)}
-  >
-    <div className="flex flex-col">
-      <div className="flex items-center gap-2 h">
-        <div className="relative w-5 h-5 pointer-events-none">
-          <input
-            type="checkbox"
-            checked={task.is_done}
-            readOnly
-            className="appearance-none w-full h-full border-2 border-blue-600 rounded-sm checked:bg-blue-600 checked:border-transparent"
-          />
-          {task.is_done ? (
-            <svg
-              className="absolute inset-0 w-5 h-5 text-white"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <li
+            key={task.id}
+            className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 shadow rounded cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
+            onClick={() => toggleDone(task)}
+          >
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 h">
+                <div className="relative w-5 h-5 pointer-events-none">
+                  <input
+                    type="checkbox"
+                    checked={task.is_done}
+                    readOnly
+                    className="appearance-none w-full h-full border-2 border-blue-600 rounded-sm checked:bg-blue-600 checked:border-transparent"
+                  />
+                  {task.is_done ? (
+                    <svg
+                      className="absolute inset-0 w-5 h-5 text-white"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="4 10 8 14 16 6" />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="absolute inset-0 w-5 h-5 text-blue-600"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                  )}
+                </div>
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  {task.title}
+                </span>
+              </div>
+
+              {task.category && (
+                <div className="mt-2 ml-7 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="flex items-center text-xs font-medium px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                    <span
+                      className="inline-block w-3 h-3 mr-2 rounded-full"
+                      style={{ backgroundColor: task.category.color }}
+                    ></span>
+                    {task.category.name}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 mt-2 ml-7 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-full text-sm text-gray-800 dark:text-gray-200">
+                  {task.user.id === currentUserId ? (
+                    <>
+                      <span className="mr-1">👤</span> você
+                    </>
+                  ) : (
+                    <>
+                      <span className="mr-1">🤝</span> {task.user.username}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/tasks/edit/${task.id}`);
+              }}
+              className="px-3 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer select-none transition-colors"
+              style={{ minWidth: "60px", textAlign: "center" }}
             >
-              <polyline points="4 10 8 14 16 6" />
-            </svg>
-          ) : (
-            <svg
-              className="absolute inset-0 w-5 h-5 text-blue-600"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          )}
-        </div>
-        <span className="font-medium text-gray-800 dark:text-gray-200">
-          {task.title}
-        </span>
-      </div>
-
-      {task.category && (
-        <div className="flex items-center gap-2 mt-2 ml-7 text-sm text-gray-600 dark:text-gray-400">
-          <span
-            className="inline-block w-3 h-3 rounded-full"
-            style={{ backgroundColor: task.category.color }}
-          ></span>
-          <span className="text-xs font-medium px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-full">
-            {task.category.name}
-          </span>
-        </div>
-      )}
-    </div>
-
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-        navigate(`/tasks/edit/${task.id}`);
-      }}
-      className="px-3 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer select-none transition-colors"
-      style={{ minWidth: "60px", textAlign: "center" }}
-    >
-      Editar
-    </div>
-  </li>
-))}
-
+              Editar
+            </div>
+          </li>
+        ))}
       </ul>
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-2">

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CategoryDropdown } from "../components/CategoryDropdown";
 import ErrorBox from "../components/ErrorBox";
 import api from "../services/api";
+import { useAuth } from "../auth/useAuth";
 
 interface Category {
   id: number;
@@ -14,6 +15,9 @@ interface Category {
 export default function TaskForm() {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { getCurrentUserId } = useAuth();
+  const currentUserId = getCurrentUserId();
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -132,13 +136,29 @@ export default function TaskForm() {
             <label className="block mb-2 text-sm text-gray-700 dark:text-gray-300">Categoria</label>
 
             <div className="flex items-center space-between">
-              <CategoryDropdown
-                categories={categories}
-                selectedId={categoryId}
-                onSelect={handleChangeCategory}
-              />
+              {owner?.id === currentUserId && (
+                <CategoryDropdown
+                  categories={categories}
+                  selectedId={categoryId}
+                  onSelect={handleChangeCategory}
+                />
+              )}
 
-              {!showNewCategory && (
+              {owner?.id !== currentUserId && (
+                categories.map((cat) => (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <span key={cat.id} className="flex items-center text-xs font-medium px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded-full">
+                      <span
+                        className="inline-block w-3 h-3 mr-2 rounded-full"
+                        style={{ backgroundColor: cat.color }}
+                      ></span>
+                      {cat.name}
+                    </span>
+                  </div>
+                ))
+              )}
+
+              {!showNewCategory && owner?.id === currentUserId && (
                 <button
                   type="button"
                   onClick={() => setShowNewCategory(!showNewCategory)}
@@ -217,63 +237,65 @@ export default function TaskForm() {
             )}
           </div>
           
-          <div className="flex flex-col border border-gray-300 rounded p-3 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
-            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Compartilhar com
-            </label>
-            
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar usuário..."
-              className="mb-2 p-2 border border-gray-300 rounded dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-            />
+          {owner?.id === currentUserId && (
+            <div className="flex flex-col border border-gray-300 rounded p-3 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Compartilhar com
+              </label>
+              
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar usuário..."
+                className="mb-2 p-2 border border-gray-300 rounded dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+              />
 
-            {searchTerm && filteredUsers.length > 0 && (
-              <ul className="mb-2 border border-gray-300 rounded max-h-32 overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600">
-                {filteredUsers.map((user) => (
-                  <li
-                    key={user.id}
-                    onClick={() => {
-                      setSharedWith([...sharedWith, user.id]);
-                      setSearchTerm("");
-                    }}
-                    className="p-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 text-sm text-gray-800 dark:text-white"
-                  >
-                    {user.username}
-                  </li>
-                ))}
-              </ul>
-            )}
-            
-            {sharedWith.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {sharedWith.map((id) => {
-                  const user = users.find((u) => u.id === id);
-                  return (
-                    user && (
-                      <span
-                        key={id}
-                        className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded-full text-sm"
-                      >
-                        {user.username}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSharedWith(sharedWith.filter((uid) => uid !== id))
-                          }
-                          className="hover:text-gray-200 text-xs font-bold"
+              {searchTerm && filteredUsers.length > 0 && (
+                <ul className="mb-2 border border-gray-300 rounded max-h-32 overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600">
+                  {filteredUsers.map((user) => (
+                    <li
+                      key={user.id}
+                      onClick={() => {
+                        setSharedWith([...sharedWith, user.id]);
+                        setSearchTerm("");
+                      }}
+                      className="p-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 text-sm text-gray-800 dark:text-white"
+                    >
+                      {user.username}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              {sharedWith.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {sharedWith.map((id) => {
+                    const user = users.find((u) => u.id === id);
+                    return (
+                      user && (
+                        <span
+                          key={id}
+                          className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded-full text-sm"
                         >
-                          ✕
-                        </button>
-                      </span>
-                    )
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                          {user.username}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSharedWith(sharedWith.filter((uid) => uid !== id))
+                            }
+                            className="hover:text-gray-200 text-xs font-bold"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      )
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"
