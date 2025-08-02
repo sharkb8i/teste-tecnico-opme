@@ -7,7 +7,7 @@ from pathlib import Path
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DB_HOST = 'localhost' if DEBUG else 'db'
 
-print(f"DB_HOST: {DB_HOST}")
+print(f"DB_HOST: {DB_HOST}, DEBUG: {DEBUG}")
 
 DB_NAME = os.getenv('DATABASE_NAME', 'todolist')
 DB_USER = os.getenv('DATABASE_USER', 'postgres')
@@ -19,7 +19,7 @@ MANAGE_PATH = BASE_DIR / 'app' / 'manage.py'
 
 def create_database_if_not_exists():
   conn = psycopg.connect(
-    dbname='postgres',  
+    dbname=DB_NAME,  
     user=DB_USER,
     password=DB_PASS,
     host=DB_HOST,
