@@ -33,7 +33,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <form
         onSubmit={handleRegister}
-        className="w-full max-w-md p-6 rounded shadow-md bg-white dark:bg-gray-800 transition-colors duration-300"
+        className="w-full max-w-sm p-6 rounded shadow-md bg-white dark:bg-gray-800 transition-colors duration-300"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
           Cadastro
