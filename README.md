@@ -79,10 +79,11 @@ Aplicação full-stack para gerenciamento de tarefas (To-Do List), desenvolvida 
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+source .venv/bin/activate             # ou .venv\Scripts\activate no Windows
 
 pip install -r requirements.txt
-python setup_db.py
+$env:DEBUG="True"; python setup_db.py # powershell
+# DEBUG=True python setup_db.py       # se for linux  
 
 cd app
 python manage.py runserver
