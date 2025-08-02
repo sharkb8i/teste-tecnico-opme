@@ -40,7 +40,7 @@ export default function TaskForm() {
     (u) =>
       u.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !sharedWith.includes(u.id) &&
-      u.id !== owner?.id
+      u.id != currentUserId
   );
 
   useEffect(() => {
