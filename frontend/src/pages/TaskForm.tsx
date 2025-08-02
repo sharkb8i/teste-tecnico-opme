@@ -137,17 +137,38 @@ export default function TaskForm() {
           <div className="flex flex-col border border-gray-300 rounded p-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
             <label className="block mb-2 text-sm text-gray-700 dark:text-gray-300">Categoria</label>
 
-            <div className="flex items-center space-between">
-              {owner?.id === currentUserId && (
-                <CategoryDropdown
-                  categories={categories}
-                  selectedId={categoryId}
-                  onSelect={handleChangeCategory}
-                />
+            <div className="flex flex-col">
+              {(!id || owner?.id === currentUserId) && (
+                <div className="flex mb-2">
+                  <CategoryDropdown
+                    categories={categories}
+                    selectedId={categoryId}
+                    onSelect={handleChangeCategory}
+                  />
+
+                  {!showNewCategory && (
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCategory(true)}
+                      className="ml-2 bg-green-600 text-white p-2 rounded hover:bg-green-700 transition text-sm flex items-center gap-1"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               )}
 
               {owner?.id !== currentUserId && taskCategory && (
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="w-fit text-sm text-gray-600 dark:text-gray-400">
                   <span
                     className="flex items-center text-xs font-medium px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-800"
                   >
@@ -158,25 +179,6 @@ export default function TaskForm() {
                     {taskCategory.name}
                   </span>
                 </div>
-              )}
-
-              {!showNewCategory && owner?.id === currentUserId && (
-                <button
-                  type="button"
-                  onClick={() => setShowNewCategory(!showNewCategory)}
-                  className="ml-2 bg-green-600 text-white p-2 rounded hover:bg-green-700 transition text-sm flex items-center gap-1"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
               )}
             </div>
 
@@ -239,7 +241,7 @@ export default function TaskForm() {
             )}
           </div>
           
-          {owner?.id === currentUserId && (
+          {(!id || owner?.id === currentUserId) && (
             <div className="flex flex-col border border-gray-300 rounded p-3 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
               <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Compartilhar com

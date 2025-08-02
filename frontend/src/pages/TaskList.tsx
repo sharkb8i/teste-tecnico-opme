@@ -161,11 +161,11 @@ export default function TaskList() {
                 <div className="flex items-center px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-full text-sm text-gray-800 dark:text-gray-200">
                   {task.user.id === currentUserId ? (
                     <>
-                      <span className="mr-1">👤</span> você
+                      <span className="mr-1">🙋‍♂️</span> Dono
                     </>
                   ) : (
                     <>
-                      <span className="mr-1">🤝</span> {task.user.username}
+                      <span className="mr-1">🤝</span><span className="text-blue-500 font-bold">@</span>{" "}{task.user.username}
                     </>
                   )}
                 </div>
