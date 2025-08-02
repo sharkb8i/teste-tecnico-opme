@@ -95,10 +95,11 @@ export default function TaskForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(categoryId)
     const data = {
       title,
       description,
-      categoryId: categoryId || null,
+      category_id: categoryId || null,
       shared_with_ids: sharedWith,
     };
     
