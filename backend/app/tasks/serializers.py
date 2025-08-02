@@ -8,7 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
     fields = ['id', 'name', 'color']
 
 class TaskSerializer(serializers.ModelSerializer):
-  user = serializers.ReadOnlyField(source='user.id')
+  user = serializers.SerializerMethodField()
 
   category = CategorySerializer(read_only=True)
   category_id = serializers.PrimaryKeyRelatedField(
@@ -45,3 +45,9 @@ class TaskSerializer(serializers.ModelSerializer):
 
   def get_shared_with(self, obj):
     return [u.username for u in obj.shared_with.all()]
+  
+  def get_user(self, obj):
+    return {
+        "id": obj.user.id,
+        "username": obj.user.username
+    }

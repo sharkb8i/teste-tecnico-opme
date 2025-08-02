@@ -18,7 +18,7 @@ export default function TaskForm() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
-  const [ownerId, setOwnerId] = useState<number>();
+  const [owner, setOwner] = useState<{ id: number; username: string }>();
   const [error, setError] = useState("");
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,7 +35,7 @@ export default function TaskForm() {
     (u) =>
       u.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !sharedWith.includes(u.id) &&
-      u.id !== ownerId
+      u.id !== owner?.id
   );
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function TaskForm() {
         setDescription(res.data.description);
         setCategoryId(res.data.category ? res.data.category.id.toString() : "");
         setSharedWith(res.data.shared_with_ids || []);
-        setOwnerId(res.data.user);
+        setOwner(res.data.user);
       });
     }
   }, [id]);
