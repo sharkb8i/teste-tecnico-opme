@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ConfirmModalProps {
   isOpen: boolean;
   message: string;
