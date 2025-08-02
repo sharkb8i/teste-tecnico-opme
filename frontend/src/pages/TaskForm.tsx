@@ -221,8 +221,7 @@ export default function TaskForm() {
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Compartilhar com
             </label>
-
-            {/* Campo de busca */}
+            
             <input
               type="text"
               value={searchTerm}
@@ -231,7 +230,6 @@ export default function TaskForm() {
               className="mb-2 p-2 border border-gray-300 rounded dark:bg-gray-600 dark:border-gray-500 dark:text-white"
             />
 
-            {/* Sugestões */}
             {searchTerm && filteredUsers.length > 0 && (
               <ul className="mb-2 border border-gray-300 rounded max-h-32 overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600">
                 {filteredUsers.map((user) => (
@@ -248,8 +246,7 @@ export default function TaskForm() {
                 ))}
               </ul>
             )}
-
-            {/* Usuários selecionados */}
+            
             {sharedWith.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {sharedWith.map((id) => {
