@@ -6,7 +6,7 @@ interface ErrorBoxProps {
 export default function ErrorBox({ message, className = "" }: ErrorBoxProps) {
   return (
     <div
-      className={`flex items-center p-3 mb-4 bg-red-100 border border-red-400 text-red-700 rounded ${className}`}
+      className={`flex items-center p-3 bg-red-100 border border-red-400 text-red-700 rounded ${className}`}
       role="alert"
     >
       <svg

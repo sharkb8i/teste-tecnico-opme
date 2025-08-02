@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TaskList from "./pages/TaskList";
 import TaskForm from "./pages/TaskForm";
-import DarkModeToggle from "./components/arkModeToggle";
+import DarkModeToggle from "./components/DarkModeToggle";
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { token } = useAuth();
