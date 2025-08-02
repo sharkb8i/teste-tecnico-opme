@@ -63,7 +63,7 @@ export default function Toast({
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: "100%", opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg z-50"
+        className={`fixed top-4 right-4 ${typeStyles[type].bg} text-white px-4 py-2 rounded shadow-lg z-50`}
       >
         <div className="flex items-center">
           {icon}

@@ -4,6 +4,7 @@ import Toast from "../components/Toast";
 
 import api from "../services/api";
 import { useAuth } from "../auth/useAuth";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface Task {
   id: number;
@@ -31,6 +32,9 @@ export default function TaskList() {
   const [count, setCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterDone, setFilterDone] = useState<string>("");
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  
+  const [toastType, setToastType] = useState<"error" | "success" | "info" | "warning">("info");
   const [toastMessage, setToastMessage] = useState("");
 
   const navigate = useNavigate();
@@ -51,8 +55,28 @@ export default function TaskList() {
     });
   };
 
-  const showToast = (msg: string) => {
+  const showToast = (msg: string, type: "error" | "success" | "info" | "warning" = "info") => {
     setToastMessage(msg);
+    setToastType(type);
+  };
+
+  const handleDeleteClick = (task: Task) => {
+    if (task.user.id !== currentUserId) {
+      showToast("Você não pode excluir tarefas de outras pessoas.", "error");
+      return;
+    }
+    setTaskToDelete(task);
+  };
+
+  const confirmDelete = () => {
+    if (taskToDelete) {
+      deleteTask(taskToDelete.id);
+      setTaskToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setTaskToDelete(null);
   };
 
   useEffect(() => {
@@ -62,6 +86,17 @@ export default function TaskList() {
   const toggleDone = async (task: Task) => {
     await api.put(`tasks/${task.id}/`, { ...task, is_done: !task.is_done });
     fetchTasks(currentPage, filterDone);
+  };
+
+  const deleteTask = async (taskId: number) => {
+    try {
+      await api.delete(`tasks/${taskId}/`);
+      showToast("Tarefa excluída com sucesso.", "success");
+      fetchTasks(currentPage, filterDone);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      showToast("Erro ao excluir tarefa.", "error");
+    }
   };
 
   const totalPages = Math.ceil(count / pageSize);
@@ -119,7 +154,7 @@ export default function TaskList() {
             className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 shadow rounded cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
             onClick={() => {
               if (task.user.id !== currentUserId) {
-                showToast("Você não pode marcar tarefas de outras pessoas.");
+                showToast("Você não pode marcar tarefas de outras pessoas.", "error");
                 return;
               }
               toggleDone(task);
@@ -185,15 +220,28 @@ export default function TaskList() {
               </div>
             </div>
 
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/tasks/edit/${task.id}`);
-              }}
-              className="px-3 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer select-none transition-colors"
-              style={{ minWidth: "60px", textAlign: "center" }}
-            >
-              Editar
+            <div>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/tasks/edit/${task.id}`);
+                }}
+                className="px-3 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer select-none transition-colors"
+                style={{ minWidth: "60px", textAlign: "center" }}
+              >
+                Editar
+              </div>
+
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(task);
+                }}
+                className="px-3 py-1 rounded bg-red-500 hover:bg-red-600 cursor-pointer select-none transition-colors"
+                style={{ minWidth: "60px", textAlign: "center" }}
+              >
+                Excluir
+              </div>
             </div>
           </li>
         ))}
@@ -227,10 +275,17 @@ export default function TaskList() {
       {toastMessage && (
         <Toast
           message={toastMessage}
-          type="error"
+          type={toastType}
           onClose={() => setToastMessage("")}
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!taskToDelete}
+        message={`Confirma exclusão da tarefa "${taskToDelete?.title}"?`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }
