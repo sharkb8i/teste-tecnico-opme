@@ -207,7 +207,11 @@ export default function TaskList() {
               )}
               <div className="flex items-center gap-2 mt-2 ml-7 text-sm text-gray-600 dark:text-gray-300">
                 <div className="flex items-center px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-full text-sm text-gray-800 dark:text-gray-200">
-                  {task.user.id === currentUserId ? (
+                  <div>
+                    task.user.id: {task.user.id} | currentUserId: {currentUserId}
+                  </div>
+
+                  {task.user.id == currentUserId ? (
                     <>
                       <span className="mr-1">🙋‍♂️</span> Dono
                     </>
