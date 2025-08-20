@@ -153,8 +153,8 @@ export default function TaskList() {
             key={task.id}
             className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 shadow rounded cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
             onClick={() => {
-              if (task.user.id !== currentUserId) {
-                showToast("Você não pode marcar tarefas de outras pessoas.", "error");
+              if (task.user.id != currentUserId) {
+                showToast("Você não pode marcar/desmarcar tarefas de outras pessoas.", "error");
                 return;
               }
               toggleDone(task);
