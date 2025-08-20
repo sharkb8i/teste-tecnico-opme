@@ -75,7 +75,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       {open && (
         <div className="absolute mt-1 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow z-10 max-h-60 overflow-y-auto">
           <div
-            className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit && 'cursor-pointer'}`}
+            className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit ? 'cursor-pointer' : 'auto'}`}
             onClick={() => {
               onSelect("");
               setOpen(false);
@@ -86,7 +86,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit && 'cursor-pointer'} flex items-center gap-2`}
+              className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit ? 'cursor-pointer' : 'auto'} flex items-center gap-2`}
               onClick={() => {
                 onSelect(cat.id.toString());
                 setOpen(false);
