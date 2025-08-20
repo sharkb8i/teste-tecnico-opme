@@ -43,10 +43,6 @@ export default function TaskForm() {
       !sharedWith.includes(u.id) &&
       u.id != currentUserId
   );
-  
-  console.log("id: ", id);
-  console.log("owner.id: ", owner?.id);
-  console.log("currentUserId: ", currentUserId);
 
   useEffect(() => {
     if (id) {
