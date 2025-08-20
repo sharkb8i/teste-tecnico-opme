@@ -10,12 +10,14 @@ interface CategoryDropdownProps {
   categories: Category[];
   selectedId: string;
   onSelect: (id: string) => void;
+  canEdit?: boolean;
 }
 
 export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   categories,
   selectedId,
   onSelect,
+  canEdit = true,
 }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     <div className="relative w-full" ref={dropdownRef}>
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => canEdit && setOpen((prev) => !prev)}
         className="w-full flex justify-between items-center border border-gray-300 rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
         {selectedCategory ? (
@@ -73,7 +75,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       {open && (
         <div className="absolute mt-1 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow z-10 max-h-60 overflow-y-auto">
           <div
-            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+            className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit && 'cursor-pointer'}`}
             onClick={() => {
               onSelect("");
               setOpen(false);
@@ -84,7 +86,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex items-center gap-2"
+              className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 ${canEdit && 'cursor-pointer'} flex items-center gap-2`}
               onClick={() => {
                 onSelect(cat.id.toString());
                 setOpen(false);
