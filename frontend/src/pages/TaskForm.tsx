@@ -56,7 +56,8 @@ export default function TaskForm() {
         setOwner(res.data.user);
         setIsLoading(false);
       });
-    }
+    } else
+      setIsLoading(false);
   }, [id]);
 
   useEffect(() => {
@@ -143,30 +144,45 @@ export default function TaskForm() {
 
             <div className="flex flex-col">
               <div className="flex mb-2">
-                <CategoryDropdown
-                  categories={categories}
-                  selectedId={categoryId}
-                  onSelect={handleChangeCategory}
-                  canEdit={!isLoading && owner?.id == currentUserId}
-                />
+                {
+                  id ? (
+                    owner?.id == currentUserId && !isLoading && (
+                      <CategoryDropdown
+                        categories={categories}
+                        selectedId={categoryId}
+                        onSelect={handleChangeCategory}
+                        canEdit={true}
+                      />
+                    )
+                  ) : (
+                    <CategoryDropdown
+                      categories={categories}
+                      selectedId={categoryId}
+                      onSelect={handleChangeCategory}
+                      canEdit={true}
+                    />
+                  )
+                }
 
-                {!showNewCategory && (!isLoading && owner?.id == currentUserId) && (
-                  <button
-                    type="button"
-                    onClick={() => setShowNewCategory(true)}
-                    className="ml-2 bg-green-600 text-white p-2 rounded hover:bg-green-700 transition text-sm flex items-center gap-1"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
+                {!showNewCategory && !isLoading && (
+                  (!id || (owner && owner.id == currentUserId)) && (
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCategory(true)}
+                      className="ml-2 bg-green-600 text-white p-2 rounded hover:bg-green-700 transition text-sm flex items-center gap-1"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  )
                 )}
               </div>
 
@@ -306,9 +322,9 @@ export default function TaskForm() {
 
           <button
             type="submit"
-            disabled={isLoading || owner?.id != currentUserId}
+            disabled={!isLoading && !!id && owner?.id != currentUserId}
             className={`py-2 rounded transition
-              ${isLoading || owner?.id != currentUserId
+              ${!isLoading && !!id && owner?.id != currentUserId
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700'}`}
           >
